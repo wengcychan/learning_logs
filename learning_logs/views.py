@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Topic
+from .forms import TopicForm
 
 # Create your views here.
 def index(request):
@@ -23,3 +24,25 @@ def topic(request, topic_id):
     # Store the topic and entries in the context dictionary, which we’ll pass to the template.
     context = {'topic': topic, 'entries': entries}
     return render(request, 'learning_logs/topic.html', context)
+
+"""this function takes in the request object as its parameter.
+When the user initially requests this page, their browser will send a GET request. 
+Once the user has filled out and submitted the form, their browser will submit a POST request.
+Depending on the request, we know whether the user is requesting a blank form 
+(GET) or asking us to process a completed form (POST).
+"""
+def new_topic(request):
+    """Add a new topic."""
+    if request.method != 'POST':
+        # No data submitted; create a blank form.
+        form = TopicForm()
+    else:
+        # POST data submitted; process data.
+        form = TopicForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            # redirect() function takes in the name of a view and redirects the user to the page associated with that view.
+            return redirect('learning_logs:topics')
+    # Display a blank or invalid form.
+    context = {'form': form}
+    return render(request, 'learning_logs/new_topic.html', context)
