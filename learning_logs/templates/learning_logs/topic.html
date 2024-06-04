@@ -20,6 +20,10 @@
             include line breaks in a format understood by browsers, 
             rather than showing a block of uninterrupted text.  -->
         <p>{{ entry.text|linebreaks }}</p>
+        <p>
+            <a href="{% url 'learning_logs:edit_entry' entry.id %}">
+                Edit entry</a>
+        </p>
     </li>
     {% empty %}
     <li>There are no entries for this topic yet.</li>

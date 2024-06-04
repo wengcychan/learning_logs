@@ -6,7 +6,13 @@
 <ul>
     {% for topic in topics %}
     <li>
-        <a href="{% url 'learning_logs:topic' topic.id %}">{{ topic.text }}</a>
+        <a href="{% url 'learning_logs:topic' topic.id %}">{{ topic.text }}</a> -
+        <a href="{% url 'learning_logs:edit_topic' topic.id %}">
+            Edit topic</a>
+        <!-- <p>
+            <a href="{% url 'learning_logs:edit_topic' topic.id %}">
+                Edit topic</a>
+        </p> -->
     </li>
     {% empty %}
     <li>No topics have been added yet.</li>
