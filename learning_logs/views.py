@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
@@ -19,8 +20,8 @@ before the code in topics(). If the user isn't logged in, they're redirected to 
 
 @login_required
 def topics(request):
-    """Show all topics."""
-    topics = Topic.objects.order_by('date_added')
+    """Retrieve only the Topic objects from the database whose owner attribute matches the current user"""
+    topics = Topic.objects.filter(owner=request.user).order_by('date_added')
     context = {'topics': topics}
     return render(request, 'learning_logs/topics.html', context)
 
@@ -30,6 +31,9 @@ def topic(request, topic_id):
     """Show a single topic and all its entries."""
     # Query: Use the get() method to retrieve the topic requested by the user.
     topic = Topic.objects.get(id=topic_id)
+    # Make sure the topic belongs to the current user.
+    if topic.owner != request.user:
+        raise Http404
     # Query: Get all the entries associated with the topic and order them by date_added.
     # The minus sign in front of date_added sorts the results in reverse order,
     # which will display the most recent entries first.
@@ -56,8 +60,15 @@ def new_topic(request):
     else:
         # POST data submitted; process data.
         form = TopicForm(data=request.POST)
+        """ When we first call form.save(), we pass the commit=False argument 
+        because we need to modify the new topic before saving it to the database
+        We then set the new topic's owner attribute to the current user before 
+        calling save() on the topic instance we just defined
+        """
         if form.is_valid():
-            form.save()
+            new_topic = form.save(commit=False)
+            new_topic.owner = request.user
+            new_topic.save()
             # redirect() function takes in the name of a view and redirects the user to the page associated with that view.
             return redirect('learning_logs:topics')
     # Display a blank or invalid form.
@@ -69,7 +80,8 @@ def new_topic(request):
 def edit_topic(request, topic_id):
     """ Edit an existing topic."""
     topic = Topic.objects.get(id=topic_id)
-
+    if topic.owner != request.user:
+        raise Http404
     if request.method != 'POST':
         """ Initial request; pre-fill form with the current topic.
         The argument instance=topic tells Django to create the form,
@@ -129,7 +141,8 @@ def edit_entry(request, entry_id):
     """ Edit an existing entry."""
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
-
+    if topic.owner != request.user:
+        raise Http404
     if request.method != 'POST':
         """ Initial request; pre-fill form with the current entry.
         The argument instance=entry tells Django to create the form,
