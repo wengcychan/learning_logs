@@ -1,33 +1,46 @@
 {% extends 'learning_logs/base.html' %}
 
+{% block page_header %}
+<h1>{{ topic.text }}</h1>
+{% endblock page_header %}
+
 {% block content %}
-
-<p>Topic: {{ topic.text }}</p>
-
-<p>Entries:</p>
 <p>
     <a href="{% url 'learning_logs:new_entry' topic.id %}">Add a new entry</a>
 </p>
 
-<ul>
-    {% for entry in entries %}
-    <li>
+{% for entry in entries %}
+<!-- The card selector takes care of most of the styling we need for this div; we customize the card by adding
+     a small margin to the bottom of each card (mb-3) -->
+<div class="card mb-3">
+    <!-- Card header with timestamp and edit link -->
+    <h4 class="card-header">
         <!-- In Django templates, a vertical line (|) represents a template filter,
             a function that modifies the value in a template variable during the rendering process.
             The filter date:'M d, Y H:i' displays timestamps in the format January 1, 2022 23:00. -->
-        <p>{{ entry.date_added|date:'M d, Y H:i' }}</p>
+        {{ entry.date_added|date:'M d, Y H:i' }}
+        <!-- The <small> tag around the edit_entry link makes it appear a little smaller than the timestamp -->
+        <small><a href="{% url 'learning_logs:edit_entry' entry.id %}">
+                Edit entry</a></small>
+    </h4>
+    <!-- Card body with entry text. This selector places the text of the entry in a simple box on the card. -->
+    <div class="card-body">
         <!-- The filter linebreaks after text attribute ensures that long text entries 
             include line breaks in a format understood by browsers, 
             rather than showing a block of uninterrupted text.  -->
-        <p>{{ entry.text|linebreaks }}</p>
-        <p>
-            <a href="{% url 'learning_logs:edit_entry' entry.id %}">
-                Edit entry</a>
-        </p>
-    </li>
-    {% empty %}
-    <li>There are no entries for this topic yet.</li>
-    {% endfor %}
-</ul>
+        <p class="card-text">{{ entry.text|linebreaks }}</p>
+    </div>
+</div>
+{% empty %}
+<p>There are no entries for this topic yet.</p>
+{% endfor %}
 
 {% endblock content %}
+
+<!-- 
+    On topic page, we use Bootstrap’s card component to make each entry stand out. 
+    A card is a nestable set of divs with flexible, predefined styles that are 
+    perfect for displaying a topic’s entries
+    - This card has two nested elements: one to hold the timestamp and the link to 
+    edit the entry, and another to hold the body of the entry.
+ -->

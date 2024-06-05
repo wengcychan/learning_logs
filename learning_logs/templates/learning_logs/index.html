@@ -1,6 +1,39 @@
 {% extends 'learning_logs/base.html' %}
 
+{% block page_header %}
+<div class="p-3 mb-4 bg-light border rounded-3">
+    <div class="container-fluid py-4">
+        <h1 class="display-3">Track your learning.</h1>
+
+        <p class="lead">Make your own Learning Log, and keep a list of the
+            topics you're learning about. Whenever you learn something new
+            about a topic, make an entry summarizing what you've learned.</p>
+
+        <a class="btn btn-primary btn-lg mt-1" href="{% url 'accounts:register' %}">Register &raquo;</a>
+    </div>
+</div>
+{% endblock page_header %}
+
 {% block content %}
 <p>Learning Log helps you keep track of your learning, for any topic you're
     interested in.</p>
 {% endblock content %}
+
+<!-- 
+    Here use a Bootstrap element called a jumbotron, a large box that stands out from the rest of the page. 
+    Typically, it’s used on home pages to hold a brief description of the overall project and a call to action
+    that invites the viewer to get involved.
+    - A jumbotron is implemented as a pair of div elements with a set of styling directives applied to them
+    - The outer div has padding and margin settings, a light background color, and rounded corners.
+    - The inner div is a container that changes along with the window size and has some padding as well
+    - The py-4 selector adds padding to the top and bottom of the div element.
+    - Inside the jumbotron are three elements.
+        - The first is a short message, Track your learning, that gives new visitors a sense of what Learning Log does
+        - The <h1> element is a first-level header, and the display-3 selector adds a thinner and taller look 
+        to this particular header.
+        - We also include a longer message that provides more information about what the user can do with their
+        learning log. This is formatted as a lead paragraph, which is meant to stand out from regular paragraphs
+    - Rather than just using a text link, we create a button that invites users to register an account on Learning Log 
+        - This is the same link as in the header, but the button stands out on the page and shows the viewer 
+        what they need to do in order to start using the project. 
+  -->

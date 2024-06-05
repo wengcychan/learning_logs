@@ -1,35 +1,128 @@
-<!-- In Django’s authentication system, every template has a user object available that always has an
-    is_authenticated attribute set: the attribute is True if the user is logged in and False if they aren’t. 
-    This attribute allows you to display one message to authenticated users and another to unauthenticated users.
-    Authenticated users have an additional username attribute set, which we use to personalize the greeting 
-    and remind the user they’re logged in -->
+<!-- All Bootstrap styling options are now available in any template that inherits from base.html. 
+    If you want to use custom template tags from django-bootstrap5, each template will need to include 
+    the {% load django_bootstrap5 %} tag -->
 
-<p>
-    <a href="{% url 'learning_logs:index' %}">Learning Log</a> -
-    <a href="{% url 'learning_logs:topics' %}">Topics</a> -
-    {% if user.is_authenticated %}
-    Hello, {{ user.username }}.
-    {% else %}
-    <a href="{% url 'accounts:register' %}">Register</a> -
-    <a href="{% url 'accounts:login' %}">Log in</a>
-    {% endif %}
-</p>
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}{% endblock content %}
+<!-- The head of an HTML file doesn’t hold any of the page’s content; it just tells the browser what it needs 
+    to know to display the page correctly. We include a <title> element for the page, which will display in 
+    the browser’s title bar whenever Learning Log is open -->
 
-<!-- The default URL pattern for logging out is 'accounts/logout/'. However, the
-     request has to be sent as a POST request; otherwise, attackers can easily 
-     force logout requests. To make the logout request use POST, we define a simple form.
-     We place the form at the bottom of the page, below a horizontal rule element 
-     This is an easy way to always keep the logout button in a consistent position below 
-     any other content on the page. The form itself has the logout URL as its action 
-     argument, and 'post' as the request method. Every form in Django needs to include 
-     the {% csrf_token %}, even a simple form like this one.  -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Log</title>
 
-{% if user.is_authenticated %}
-<hr />
-<form action="{% url 'accounts:logout' %}" method='post'>
-    {% csrf_token %}
-    <button type="submit">Log out</button>
-</form>
-{% endif %}
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light mb-4 border">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'learning_logs:index' %}">Learning Log</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class=" nav-item">
+                        <a class="nav-link" href="{% url 'learning_logs:topics' %}">Topics</a>
+                    </li>
+                </ul> <!-- End of links on left side of navbar -->
+                <!-- Account-related links -->
+                <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="navbar-text me-2">Hello, {{ user.username }}</span>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:login' %}">Log in</a>
+                    </li>
+                    {% endif %}
+                </ul> <!-- End of account-related links -->
+                {% if user.is_authenticated %}
+                <form action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Log out</button>
+                </form>
+                {% endif %}
+            </div> <!-- Closes of collapsible parts of navbar -->
+        </div> <!-- Closes navbar's container -->
+    </nav> <!-- End of navbar -->
+
+    <main class="container">
+        <div class="pb-2 mb-2 border-bottom">
+            {% block page_header %} {% endblock page_header %}
+        </div>
+        <div>
+            {% block content %}{% endblock content %}
+        </div>
+    </main>
+</body>
+
+</html>
+
+<!-- 
+    Nav bar:
+    - <nav> element opens the code for the navigation bar at the top of the page
+        - Everything contained in this element is styled according to the Bootstrap style rules defined by the 
+        selectors navbar, navbar-expand-md,...
+        - The navbar-light and bg-light selectors style the navigation bar with a light-themed background.
+        - The mb in mb-4 is short for margin-bottom; this selector ensures that a little space appears between 
+        the navigation bar and the rest of the page.
+        - The border selector provides a thin border around the light background to set it off a little from 
+        the rest of the page.
+    - <div> tag opens a resizable container that will hold the overall navigation bar.
+        - The term div is short for division; you build a web page by dividing it into sections and defining 
+        style and behavior rules that apply to that section. Any styling or behavior rules that are defined in
+        an opening <div> tag affect everything you see until its corresponding closing tag, written as </div>
+    - Project’s name, Learning Log, is set to appear as the first element on the navigation bar. 
+        - This will also serve as a link to the home page. The navbar-brand selector styles this link so it 
+        stands out from the rest of the links and helps add some branding to the site
+    - The Bootstrap template then defines a button that appears if the browser window is too narrow to display 
+    the whole navigation bar horizontally
+        - When the user clicks the button, the navigation elements appear in a drop-down list.
+        - The collapse reference causes the navigation bar to collapse when the user shrinks the browser window 
+        or when the site is displayed on devices with small screens
+    - The 2nd section (<div>) of the navigation bar
+        - the part of the navigation bar that can collapse depending on the size of the browser window.
+        - Bootstrap defines navigation elements as items in an unordered list
+    - You can have as many groups of links as you need on a page. 
+        - A new set of links begins with opening <ul> tag
+        - The selector ms-auto is short for margin-start-automatic: this selector examines the other elements 
+        in the navigation bar and works out a left (start) margin that pushes this group of links to the right
+        side of the browser window.
+    - The if block is the same conditional block we used earlier to display appropriate messages to users,
+    depending on whether they’re logged in.
+        - The greeting for authenticated users is wrapped in a <span> element
+        - A span element styles pieces of text or elements of a page that are part of a longer line.
+        - While div elements create their own divisions in a page, span elements are continuous within a larger section
+        - Here, we’re using the span element to style informational text on the navigation bar: in this case, 
+        the logged-in user’s name
+    - If you wanted to add more links to the navigation bar, you’d add another <li> item to one of the <ul> groups
+ -->
+
+<!-- 
+    Main:
+    - The main element is used for the most significant part of the body of a page.
+    - Here we assign the bootstrap selector container, which is a simple way to group elements on a page.
+    - The first div element contains a page_header block, which is used to title most pages.
+        - The selector pb-2 is a bootstrap directive that provides a moderate amount of padding at the bottom
+        of the styled element.
+        - A margin is the space between an element’s border and other elements on the page. 
+        The selector mb-2 provides a moderate amount of margin at the bottom of this div.
+        - We want a border on the bottom of this block, so we use the selector border-bottom, 
+        which provides a thin border at the bottom of the page_header block
+    - The 2nd div element contains the block content. We don’t apply any specific style to this block, 
+    so we can style the content of any page as we see fit for that page
+  -->
