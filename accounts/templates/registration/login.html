@@ -1,0 +1,20 @@
+{% extends 'learning_logs/base.html' %}
+
+{% block content %}
+
+<!-- If the form’s errors attribute is set, we display an error message -->
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<!-- We want the login view to process the form, so we set the action argument as the URL of the 
+    login page. The login view sends a form object to the template, and it’s up to us to display the 
+    form and add a submit button -->
+<form action="{% url 'accounts:login' %}" method='post'>
+    {% csrf_token %}
+    {{ form.as_div }}
+
+    <button type="submit">Login</button>
+</form>
+
+{% endblock content %}

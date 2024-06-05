@@ -1,6 +1,35 @@
+<!-- In Django’s authentication system, every template has a user object available that always has an
+    is_authenticated attribute set: the attribute is True if the user is logged in and False if they aren’t. 
+    This attribute allows you to display one message to authenticated users and another to unauthenticated users.
+    Authenticated users have an additional username attribute set, which we use to personalize the greeting 
+    and remind the user they’re logged in -->
+
 <p>
     <a href="{% url 'learning_logs:index' %}">Learning Log</a> -
-    <a href="{% url 'learning_logs:topics' %}">Topics</a>
+    <a href="{% url 'learning_logs:topics' %}">Topics</a> -
+    {% if user.is_authenticated %}
+    Hello, {{ user.username }}.
+    {% else %}
+    <a href="{% url 'accounts:register' %}">Register</a> -
+    <a href="{% url 'accounts:login' %}">Log in</a>
+    {% endif %}
 </p>
 
 {% block content %}{% endblock content %}
+
+<!-- The default URL pattern for logging out is 'accounts/logout/'. However, the
+     request has to be sent as a POST request; otherwise, attackers can easily 
+     force logout requests. To make the logout request use POST, we define a simple form.
+     We place the form at the bottom of the page, below a horizontal rule element 
+     This is an easy way to always keep the logout button in a consistent position below 
+     any other content on the page. The form itself has the logout URL as its action 
+     argument, and 'post' as the request method. Every form in Django needs to include 
+     the {% csrf_token %}, even a simple form like this one.  -->
+
+{% if user.is_authenticated %}
+<hr />
+<form action="{% url 'accounts:logout' %}" method='post'>
+    {% csrf_token %}
+    <button type="submit">Log out</button>
+</form>
+{% endif %}

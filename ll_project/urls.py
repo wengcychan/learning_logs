@@ -19,5 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # This line will match any URL
+    # that starts with the word accounts, such as http://localhost:8000/accounts/login/
+    path('accounts/', include('accounts.urls')),
     path('', include('learning_logs.urls')),
 ]
