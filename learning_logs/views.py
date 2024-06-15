@@ -4,6 +4,7 @@ from django.http import Http404
 
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -158,3 +159,7 @@ def edit_entry(request, entry_id):
             return redirect('learning_logs:topic', topic_id=topic.id)
     context = {'entry': entry, 'topic': topic, 'form': form}
     return render(request, 'learning_logs/edit_entry.html', context)
+
+def test(request):
+    data = {"test": "This is a test JSON"}
+    return JsonResponse(data)
