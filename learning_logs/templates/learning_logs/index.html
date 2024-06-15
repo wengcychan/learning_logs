@@ -3,7 +3,7 @@
 {% block page_header %}
 <script>
 async function fetchData() {
-    const response = await fetch('https://127.0.0.1:8000/api/');
+    const response = await fetch('/api/');
     const data = await response.text(); // or response.json() if the API returns JSON
     document.getElementById('demo').innerHTML = data;
 }
