@@ -9,7 +9,6 @@ services:
     envVars:
       - key: RENDER_EXTERNAL_HOSTNAME
         value: 0.0.0.0
-    envVars:
       - key: PORT
         value: 8000
     buildCommand: docker-compose build
