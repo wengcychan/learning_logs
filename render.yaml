@@ -11,5 +11,3 @@ services:
         value: 0.0.0.0
       - key: PORT
         value: 8000
-    buildCommand: docker-compose build
-    startCommand: docker-compose up learning_logs
