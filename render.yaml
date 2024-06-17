@@ -9,11 +9,8 @@ services:
     envVars:
       - key: RENDER_EXTERNAL_HOSTNAME
         value: 0.0.0.0
-    ports:
-      - port: 8000
+    envVars:
+      - key: PORT
+        value: 8000
     buildCommand: docker-compose build
     startCommand: docker-compose up learning_logs
-    mounts:
-      - type: volume
-        name: learning_logs
-        path: /learning_logs/app
